@@ -46,7 +46,8 @@ const App = () => {
             setTimeout(() => setMessage(null), 5000)
           })
           .catch(error => {
-            setError(`The person ${newName} was already deleted from the server`)
+            //setError(`The person ${newName} was already deleted from the server`)
+            setError(error.response.data.error)
             setTimeout(() => setError(null), 5000)
             setPersons(persons.filter(p => p.id !== person.id))
           })
@@ -62,25 +63,29 @@ const App = () => {
           setMessage(`Added ${newName}`)
           setTimeout(() => setMessage(null), 5000)
         })
+        .catch(error => {
+          setError(error.response.data.error)
+          setTimeout(() => setError(null), 5000)
+        })
       }
   }
 
   const deletePerson = (event) => {
     event.preventDefault()
-    const id = event.target.value
-    const name = persons.find(person => person.id === parseInt(id)).name
+    const name = event.target.value  
+    const person = persons.find(person => person.name === name)
     if (window.confirm(`Delete ${name}?`)) {
       personService
-        .remove(id)
+        .remove(person.id)
         .then(returnedPerson => {
-          setPersons(persons.filter(p => p.id !== id))
+          setPersons(persons.filter(p => p.id !== person.id))
           setMessage(`Deleted ${name}`)
           setTimeout(() => setMessage(null), 5000)
         })
         .catch(error => {
           setError(`The person ${name} was already deleted from the server`)
           setTimeout(() => setError(null), 5000)
-          setPersons(persons.filter(p => p.id !== id))
+          setPersons(persons.filter(p => p.id !== person.id))
         })
     }
   }
